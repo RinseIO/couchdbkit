@@ -32,6 +32,8 @@ from django.utils.datastructures import SortedDict
 
 COUCHDB_DATABASES = getattr(settings, "COUCHDB_DATABASES", [])
 COUCHDB_TIMEOUT = getattr(settings, "COUCHDB_TIMEOUT", 300)
+COUCHDB_USER = getattr(settings, "COUCHDB_USER", '')
+COUCHDB_PASSWORD = getattr(settings, "COUCHDB_PASSWORD", '')
 
 class CouchdbkitHandler(object):
     """ The couchdbkit handler for django """
@@ -59,9 +61,12 @@ class CouchdbkitHandler(object):
             uri = app_setting['URL']
 
             # Blank credentials are valid for the admin party
-            user = app_setting.get('USER', '')
-            password = app_setting.get('PASSWORD', '')
-            auth = BasicAuth(user, password)
+            user = COUCHDB_USER
+            password = COUCHDB_PASSWORD
+            if user and password:
+                auth = BasicAuth(user, password)
+            else:
+                auth = None
 
             try:
                 if isinstance(uri, (list, tuple)):
@@ -75,9 +80,13 @@ class CouchdbkitHandler(object):
                 raise ValueError("couchdb uri [%s:%s] invalid" % (
                     app_name, uri))
 
-            res = CouchdbResource(server_uri, timeout=COUCHDB_TIMEOUT, filters=[auth])
+            if auth:
+                res = CouchdbResource(server_uri, timeout=COUCHDB_TIMEOUT, filters=[auth])
+            else:
+                res = CouchdbResource(server_uri, timeout=COUCHDB_TIMEOUT)
 
             server = Server(server_uri, resource_instance=res)
+            #server = Server(server_uri)
             app_label = app_name.split('.')[-1]
             self._databases[app_label] = (server, dbname)
 
@@ -161,14 +170,20 @@ class CouchdbkitHandler(object):
 
     def get_db(self, app_label, register=False):
         """ retrieve db session for a django application """
+        print register
         if register:
             return
 
+        print app_label
         db = self._databases[app_label]
+        print db
         if isinstance(db, tuple):
             server, dbname = db
+            print server, dbname
             db = server.get_or_create_db(dbname)
+            print db
             self._databases[app_label] = db
+            print self._databases
         return db
 
     def register_schema(self, app_label, *schema):
