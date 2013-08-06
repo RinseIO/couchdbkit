@@ -170,20 +170,14 @@ class CouchdbkitHandler(object):
 
     def get_db(self, app_label, register=False):
         """ retrieve db session for a django application """
-        print register
         if register:
             return
 
-        print app_label
         db = self._databases[app_label]
-        print db
         if isinstance(db, tuple):
             server, dbname = db
-            print server, dbname
             db = server.get_or_create_db(dbname)
-            print db
             self._databases[app_label] = db
-            print self._databases
         return db
 
     def register_schema(self, app_label, *schema):
