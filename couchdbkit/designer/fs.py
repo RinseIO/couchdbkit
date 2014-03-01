@@ -182,6 +182,10 @@ class FSDoc(object):
             'objects': objects,
             'signatures': signatures
         })
+        for item in manifest:
+            if item.endswith('.coffee'):
+                self._doc['language'] = 'coffeescript'
+                break
 
 
         if self.docid.startswith('_design/'):  # process macros
