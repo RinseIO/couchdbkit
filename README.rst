@@ -7,9 +7,9 @@ managements and view access. All objects mostly reflect python objects for
 convenience. Server and Databases objects could be used for example as easy
 as using a dict.
 
-.. image:: https://secure.travis-ci.org/benoitc/couchdbkit.png?branch=master
+.. image:: https://secure.travis-ci.org/RinseIO/couchdbkit.png?branch=master
     :alt: Build Status
-    :target: https://secure.travis-ci.org/benoitc/couchdbkit
+    :target: https://secure.travis-ci.org/RinseIO/couchdbkit
 
 Installation
 ------------
